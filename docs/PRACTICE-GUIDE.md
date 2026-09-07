@@ -47,10 +47,10 @@ Try one of each shape:
 
 ## Drill 3 — Bulk import from CSV
 
-The real skill. `data/bulk-import-practice.csv` holds **33 products / 99 rows** that are *not* yet in
+The real skill. `data/remaining-catalogue.csv` holds **238 products / 704 rows** that are *not* yet in
 the store, so you'll see them actually appear.
 
-1. **Products → Import → Add file →** choose `data/bulk-import-practice.csv`.
+1. **Products → Import → Add file →** choose `data/remaining-catalogue.csv`.
 2. Leave *"Overwrite any current products that have the same handle"* **unticked** for a first run.
 3. **Upload and preview**, check the preview table, then **Import products**.
 4. Shopify emails you when it finishes and reports any skipped rows.
@@ -99,9 +99,9 @@ the store, so you'll see them actually appear.
 
 ## Reference: rebuilding from scratch
 
-If you want to wipe and re-seed, `data/practice-catalog-seeded.csv` reproduces the 38 seeded
-products, and `data/bulk-products.jsonl` is the same catalogue as Admin API `ProductSetInput`
-payloads if you'd rather do it through the API than the CSV importer.
+If you want to wipe and re-seed, `data/loaded-catalogue.csv` reproduces the 50 products currently
+loaded, and `data/catalogue-full.json` holds all 288 as structured JSON if you'd rather drive the
+Admin API than the CSV importer.
 
 To empty the store first: **Products → select all → Actions → Delete products.** Collections are
 smart, so they empty themselves; delete them separately if you want a truly blank store.
