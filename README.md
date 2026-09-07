@@ -16,7 +16,7 @@ rehearse product operations — adding products one at a time and in bulk — wi
 
 ## Two things to do
 
-**1. Publish the theme.** The dark, Concept-style look is built but sitting as an unpublished theme:
+**1. Publish the theme.** The light, Concept-style look is built but sitting as an unpublished theme:
 
 > Online Store → Themes → **“LXP Forged — Practice”** → Preview, then **Publish**
 
