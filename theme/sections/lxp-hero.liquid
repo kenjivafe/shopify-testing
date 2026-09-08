@@ -1,0 +1,63 @@
+{{ 'lxp-base.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign s = section.settings
+  assign h = 'min(88svh, 900px)'
+  if s.height == 'medium'
+    assign h = 'min(62svh, 640px)'
+  elsif s.height == 'short'
+    assign h = 'min(46svh, 460px)'
+  endif
+-%}
+<section class="lxp lxp-hero" style="--hero-h: {{ h }}; --overlay: {{ s.overlay | divided_by: 100.0 }};">
+  {%- if s.image != blank -%}
+    {{ s.image | image_url: width: 3200 | image_tag:
+        loading: 'eager', fetchpriority: 'high', class: 'lxp-hero__img',
+        widths: '600,900,1200,1600,2000,2600,3200',
+        sizes: '100vw', alt: s.image.alt | default: s.heading }}
+  {%- endif -%}
+  <div class="lxp-hero__scrim"></div>
+  <div class="lxp-container lxp-hero__inner">
+    {%- if s.eyebrow != blank -%}<p class="lxp-eyebrow lxp-hero__eyebrow">{{ s.eyebrow }}</p>{%- endif -%}
+    {%- if s.heading != blank -%}<h2 class="lxp-h1 lxp-hero__title">{{ s.heading }}</h2>{%- endif -%}
+    {%- if s.text != blank -%}<p class="lxp-body lxp-body--light lxp-hero__text">{{ s.text }}</p>{%- endif -%}
+    {%- if s.button_label != blank -%}
+      <a class="lxp-btn lxp-btn--light lxp-hero__cta" href="{{ s.button_link | default: '/collections/all' }}">{{ s.button_label }}</a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .lxp-hero { position: relative; display: grid; place-items: center; min-height: var(--hero-h); overflow: hidden; background: #111; }
+  .lxp-hero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .lxp-hero__scrim { position: absolute; inset: 0;
+    background: linear-gradient(to top, rgb(13 13 13 / calc(var(--overlay) + 0.25)) 0%, rgb(13 13 13 / var(--overlay)) 55%, rgb(13 13 13 / calc(var(--overlay) * 0.5)) 100%); }
+  .lxp-hero__inner { position: relative; z-index: 1; text-align: center; display: flex; flex-direction: column;
+    align-items: center; gap: 1.15rem; padding-block: 5rem; }
+  .lxp-hero__eyebrow { color: rgb(255 255 255 / 0.72); }
+  .lxp-hero__title { color: #fff; max-width: 18ch; text-wrap: balance; }
+  .lxp-hero__text { max-width: 52ch; }
+  .lxp-hero__cta { margin-top: 0.75rem; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "LXP hero",
+  "tag": "section",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Background image" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Performance without Compromise" },
+    { "type": "textarea", "id": "text", "label": "Text" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop all parts" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "select", "id": "height", "label": "Height",
+      "options": [
+        { "value": "tall", "label": "Tall" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "short", "label": "Short" }
+      ], "default": "tall" },
+    { "type": "range", "id": "overlay", "label": "Overlay", "min": 0, "max": 90, "step": 5, "unit": "%", "default": 45 }
+  ],
+  "presets": [{ "name": "LXP hero" }]
+}
+{% endschema %}

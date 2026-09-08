@@ -1,0 +1,63 @@
+{{ 'lxp-base.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign s = section.settings
+  assign coll = s.collection
+  assign heading = s.heading | default: coll.title
+-%}
+<section class="lxp lxp-section">
+  <div class="lxp-container">
+    <div class="lxp-head">
+      <div>
+        {%- if s.eyebrow != blank -%}<p class="lxp-eyebrow">{{ s.eyebrow }}</p>{%- endif -%}
+        {%- if heading != blank -%}<h2 class="lxp-h3" style="margin-top:.4rem">{{ heading }}</h2>{%- endif -%}
+      </div>
+      {%- if coll != blank and s.show_view_all -%}
+        <a class="lxp-link" href="{{ coll.url }}">View all</a>
+      {%- endif -%}
+    </div>
+
+    {%- if coll.products.size > 0 -%}
+      <div class="lxp-grid" data-cols="{{ s.columns }}" data-mobile="2">
+        {%- for product in coll.products limit: s.max_products -%}
+          <a class="lxp-card" href="{{ product.url }}">
+            <div class="lxp-media">
+              {%- if product.compare_at_price > product.price -%}<span class="lxp-badge">Sale</span>{%- endif -%}
+              {%- if product.featured_image -%}
+                {{ product.featured_image | image_url: width: 800 | image_tag: loading: 'lazy',
+                   class: 'is-contain', widths: '260,400,540,800',
+                   sizes: '(max-width:989px) 45vw, 22vw', alt: product.featured_image.alt | default: product.title }}
+              {%- endif -%}
+            </div>
+            {%- if s.show_vendor and product.vendor != blank -%}
+              <p class="lxp-card__vendor">{{ product.vendor }}</p>
+            {%- endif -%}
+            <p class="lxp-card__title">{{ product.title }}</p>
+            <p class="lxp-card__price">
+              {{ product.price | money }}
+              {%- if product.compare_at_price > product.price %}<s>{{ product.compare_at_price | money }}</s>{% endif -%}
+            </p>
+          </a>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <p class="lxp-empty">Pick a collection for this section in the theme editor.</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "LXP products",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow" },
+    { "type": "text", "id": "heading", "label": "Heading" },
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "range", "id": "max_products", "label": "Products", "min": 2, "max": 20, "step": 1, "default": 8 },
+    { "type": "range", "id": "columns", "label": "Columns", "min": 2, "max": 5, "step": 1, "default": 4 },
+    { "type": "checkbox", "id": "show_vendor", "label": "Show vendor", "default": true },
+    { "type": "checkbox", "id": "show_view_all", "label": "Show \"View all\"", "default": true }
+  ],
+  "presets": [{ "name": "LXP products" }]
+}
+{% endschema %}

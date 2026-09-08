@@ -1,111 +1,123 @@
 # Theme
 
-The reference site runs **Concept** (Shopify theme store ID 2412), a paid theme. It can't be
-installed on this practice store, so the look was rebuilt on **Horizon** — the free theme already on
-the store — by matching Concept's design tokens.
+The reference site runs **Concept** (Shopify theme store ID 2412), a paid theme that can't be
+installed here. Rather than bend a free theme's settings into an approximation, the storefront UI is
+**hand-written**: a own design-system stylesheet plus six custom Liquid sections, so the markup and
+CSS are ours rather than Horizon's.
 
-## Where the design came from
+Horizon is still the installed theme — it supplies the header, footer, cart drawer, search and the
+product/collection templates. The homepage is entirely custom.
 
-Sampled from lxpforged.com's rendered CSS custom properties. Concept ships several colour
-schemes; the **base** scheme is what paints the page ground, and it is light:
+## Design tokens
 
-| Token | lxpforged (Concept base) | Practice store (Horizon) |
+Read off lxpforged.com's live computed CSS. Concept ships several colour schemes; the **base**
+scheme paints the page, and it is light.
+
+| Token | lxpforged (Concept) | Ours (`--lxp-*`) |
 |---|---|---|
-| Background | `--color-base-background: 255 255 255` | `#FFFFFF` |
+| Background | `--color-base-background: 255 255 255` | `#ffffff` |
 | Text | `--color-base-text: 23 23 23` | `#171717` |
-| Button fill | `--color-base-button: 23 23 23` | `#171717` |
-| Button text | `--color-base-button-text: 255 255 255` | `#FFFFFF` |
-| Highlight | `--color-base-highlight: 255 221 191` | `#E0A580` (accent) |
-| Border | `--color-border: foreground / 0.1` | `#E5E5E5` |
-| Sale badge | `--badge-background: #bf0303` | `#BF0303` |
-| Body font | Inter | Inter (Horizon's default) |
+| Button fill / text | `23 23 23` on `255 255 255` | same |
+| Highlight | `--color-base-highlight: 255 221 191` | `#e0a580` accent |
+| Border | `--color-border: foreground / 0.1` | `rgb(23 23 23 / .1)` |
+| Sale badge | `#bf0303` | `#bf0303` |
+| Page width | `--page-width: 1900px` | `1900px` |
+| Page padding | `--page-padding: var(--sp-12)` (3rem) | `3rem`, `1.25rem` under 1024px |
+| Button radius | `--rounded-button: 3.75rem` | `calc(infinity * 1px)` — pill |
+| Input radius | `--rounded-input: 0.375rem` | `0.375rem` |
+| Font | Inter | Inter |
 
-Shape tokens, also read off the live site:
+Concept's fluid type ramps (`clamp()` on a 0.25rem `--sp-*` scale) are mirrored as
+`--lxp-title-xl / -lg / -md` and `--lxp-body`.
 
-| | lxpforged | Practice store |
-|---|---|---|
-| Buttons | `--rounded-button: 3.75rem` (`data-rounded-button="round"`) | radius 60 — pill |
-| Inputs | `--rounded-input: 0.375rem` (`round-slight`) | radius 6 |
-| Cards | `data-rounded-card="round"` | radius 8 |
+## Files
 
-Horizon derives its whole palette from four colours, so setting those four gets most of the way
-there. On top of that:
+| File | What it is |
+|---|---|
+| `assets/lxp-base.css.liquid` | The whole design system — tokens, layout, type, buttons, grids, cards, tiles |
+| `sections/lxp-hero.liquid` | Full-bleed image hero with gradient scrim and pill CTA |
+| `sections/lxp-marquee.liquid` | Scrolling text band, light or dark |
+| `sections/lxp-collections.liquid` | Collection tile grid — `cover` for photography, `contain`-on-panel for cut-outs |
+| `sections/lxp-products.liquid` | Product card grid — contained product shot, vendor, title, price, sale badge |
+| `sections/lxp-split.liquid` | Image + text, image left or right, optional dark ground |
+| `sections/lxp-statement.liquid` | Centred statement block |
+| `templates/index.json` | Homepage, built only from the above |
 
-- **Light ground, dark pill buttons** — white page, near-black buttons with white text.
-- **Uppercase only on the small styles** (h5/h6 eyebrows and labels) with loose tracking. h1–h3
-  stay sentence case, because on the reference site the capitalisation is written into the copy
-  rather than forced by a global text-transform.
-- **Photography sections stay dark** — the two heroes keep a dark gradient overlay with white
-  text on top, which is how the reference site handles its imagery.
-- Page width wide; product cards zoom their image slowly on hover.
+Every section carries a `{% schema %}` with presets, so they're editable in the theme editor and can
+be reused on any other template.
 
-### A note on why this changed
-
-The first pass had this dark (`#171717` ground). That was wrong: those values come from
-Concept's *dark* scheme, which the reference site uses for photo-overlay sections, not for the
-page itself. The giveaway is the logo — `lxp-logo.png` is black artwork on a **solid white
-background with zero transparency** (66% of its pixels are pure white), so it can only sit on a
-light page without showing as a white slab.
-
-## The theme is NOT live yet
-
-It's installed as an **unpublished** theme called **“LXP Forged — Practice”**. Publishing a theme is
-blocked for the API integration used to build this, so the last step is manual:
-
-> **Online Store → Themes → “LXP Forged — Practice” → … → Publish**
-
-Preview it first with the **Preview** (eye) button next to it. The live theme is still stock Horizon
-until you publish, so nothing is at risk — and you can always publish the untouched `Horizon` theme
-to roll back.
+> **Note on the stylesheet name.** The CSS lives in `assets/lxp-base.css.liquid`, which Shopify
+> compiles to `lxp-base.css`. A static `assets/lxp-base.css` also exists but is shadowed by the
+> generated one and is unreachable — the API used here can't delete theme files, so it was left in
+> place. Delete it from the admin if you want to tidy up; nothing references it.
 
 ## Homepage
 
-`templates/index.json` was rebuilt to mirror the reference site's section order:
-
 | # | Section | Content |
 |---|---|---|
-| 1 | Hero (full-screen) | `lxp-hero.png`, "Performance without Compromise", CTA to all products |
-| 2 | Marquee | Scrolling brand names in a dark band — Novitec, Spofec, TechArt, FI Exhaust, Liberty Walk… |
-| 3 | Collection list | **Shop by marque** — Ferrari, Lamborghini, McLaren, Rolls-Royce |
-| 4 | Product list | Featured from **Brand - Novitec** |
-| 5 | Collection list | **Shop by category** — Exhaust, Aerodynamic, Wheels, Suspension, Collectibles, LXP Used |
-| 6 | Hero (medium) | "Professional installation in Dubai" |
-| 7 | Product list | **Category - Collectibles** |
-| 8 | Marquee | Free UAE shipping · Authorised partner · WhatsApp consultation · Installation (plain, on white) |
+| 1 | `lxp-hero` | Showroom photograph, "Performance without Compromise", pill CTA |
+| 2 | `lxp-marquee` (dark) | Novitec · Spofec · TechArt · FI Exhaust · Liberty Walk · … |
+| 3 | `lxp-collections` | **Shop by marque** — Ferrari, Lamborghini, McLaren, Rolls-Royce |
+| 4 | `lxp-products` | **Novitec**, 8 products |
+| 5 | `lxp-collections` | **Shop by category** — Exhaust, Aerodynamic, Wheels, Suspension, Collectibles, LXP Used |
+| 6 | `lxp-split` | "Fitted in-house, in Dubai" |
+| 7 | `lxp-products` | **Scale models & art pieces**, 4 products |
+| 8 | `lxp-marquee` (light) | Free UAE shipping · Authorised partner · WhatsApp consultation · … |
+
+Collection tiles trim the `Category - ` / `Car - ` / `Brand - ` prefix for display, so the grid reads
+"Exhaust" while the collection keeps its full name.
 
 ## Navigation
 
-`main-menu` was rebuilt as a three-group dropdown structure, mirroring the reference site:
-
-- **Shop by marque** → Ferrari, Lamborghini, McLaren, Rolls-Royce, Porsche, Koenigsegg, Aston Martin
-- **Shop by category** → Exhaust, Aerodynamic & Styling, Wheels, Suspension, Engine, Collectibles
-- **Brands** → Novitec, Spofec, Collectibles
-- **LXP Used**
-- **All products**
-
-Footer menu: Search, All products, Novitec, Spofec, LXP Used.
+Rebuilt to match the reference site exactly: **Shop · Brands · Installation · About · Contact**.
+Shop and Brands are dropdowns; Installation, About and Contact are real pages (Installation and
+About were created, Contact already existed).
 
 ## Images
 
-Four files were pulled into **Content → Files** and are referenced by the theme:
+In **Content → Files**:
 
 | File | Used for |
 |---|---|
-| `lxp-logo.png` | Header logo (theme setting `logo`, height 44px) |
-| `lxp-hero.png` | Homepage hero |
-| `lxp-feature-1.png` | Installation band |
-| `lxp-feature-2.png` | Spare |
+| `lxp-logo.png` | Header logo |
+| `lxp-hero-showroom.png` | Homepage hero |
+| `lxp-install.png` | Installation split |
+| `cover-ferrari.jpg` / `cover-lamborghini.jpg` / `cover-mclaren.jpg` | Marque tiles |
 
-All 17 main collections also got cover images, picked from the flagship product in each — that's what
-fills the "Shop by marque" and "Shop by category" grids. Card titles sit *below* the image in dark
-text, rather than over it, now that the page ground is light.
+**Known gap:** the source catalogue has no Rolls-Royce photography, only white-background product
+renders — so that one marque tile reads lighter than its three neighbours. Drop a real photo onto
+the *Car - Rolls-Royce* collection and it will match.
+
+## How it was verified
+
+The storefront is password-protected, so it can't be fetched. Instead the CSS was rendered against
+real catalogue data in headless Chromium at 1600px and 420px and inspected. That caught three things
+worth knowing about:
+
+1. The first dark palette was wrong — see the note below.
+2. Collection tiles mixed photography with white cut-outs and looked unfinished; hence the
+   `image_fit` setting and the grey panel treatment.
+3. The original "installation" image was the LXP wordmark, not a workshop photo.
+
+## The theme is NOT live yet
+
+It's an **unpublished** theme, **“LXP Forged — Practice”**. Publishing is blocked for the API
+integration used here, so the last step is manual:
+
+> **Online Store → Themes → “LXP Forged — Practice” → Preview, then Publish**
+
+The live theme stays stock Horizon until you click it; republishing `Horizon` rolls everything back.
+
+### Why the first pass was dark
+
+The initial build used `#171717` as the page ground. Those values come from Concept's *dark* scheme,
+which the reference site uses only for photo-overlay sections. The logo settles it: `lxp-logo.png` is
+black artwork on a **solid white background with zero transparency** (66% of its pixels are pure
+white), so it can only sit on a light page.
 
 ## Still manual
 
-A few things the API can't set, if you want them:
-
 - **Store name** — still "My Store". Settings → Store details.
-- **Storefront password** — the store is password-protected (default for a new store). Online Store
-  → Preferences → remove the password to browse it as a customer would.
-- **Announcement bar** text — Theme editor, header group.
+- **Storefront password** — Online Store → Preferences.
+- **Announcement bar** text — theme editor, header group.
 - **Favicon** — theme settings.

@@ -1,0 +1,38 @@
+{{ 'lxp-base.css' | asset_url | stylesheet_tag }}
+{%- assign s = section.settings -%}
+<section class="lxp lxp-section lxp-section--tight lxp-statement{% if s.dark %} lxp-statement--dark{% endif %}">
+  <div class="lxp-container lxp-statement__inner">
+    {%- if s.eyebrow != blank -%}<p class="lxp-eyebrow">{{ s.eyebrow }}</p>{%- endif -%}
+    {%- if s.heading != blank -%}<h2 class="lxp-h2 lxp-statement__title">{{ s.heading }}</h2>{%- endif -%}
+    {%- if s.text != blank -%}<div class="lxp-body lxp-statement__text">{{ s.text }}</div>{%- endif -%}
+    {%- if s.button_label != blank -%}
+      <a class="lxp-btn{% if s.dark %} lxp-btn--light{% endif %}" href="{{ s.button_link | default: '/collections/all' }}">{{ s.button_label }}</a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .lxp-statement--dark { background: var(--lxp-fg); color: #fff; }
+  .lxp-statement--dark .lxp-eyebrow { color: rgb(255 255 255 / 0.6); }
+  .lxp-statement--dark .lxp-body { color: rgb(255 255 255 / 0.75); }
+  .lxp-statement__inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1rem; }
+  .lxp-statement__title { max-width: 24ch; text-wrap: balance; }
+  .lxp-statement__text { max-width: 62ch; }
+  .lxp-statement__inner .lxp-btn { margin-top: 0.5rem; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "LXP statement",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow" },
+    { "type": "text", "id": "heading", "label": "Heading" },
+    { "type": "richtext", "id": "text", "label": "Text" },
+    { "type": "text", "id": "button_label", "label": "Button label" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "checkbox", "id": "dark", "label": "Dark background", "default": false }
+  ],
+  "presets": [{ "name": "LXP statement" }]
+}
+{% endschema %}

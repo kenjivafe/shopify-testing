@@ -8,7 +8,7 @@ rehearse product operations — adding products one at a time and in bulk — wi
 | **Practice store** | `07jxvv-ym.myshopify.com` |
 | **Admin** | https://admin.shopify.com/store/07jxvv-ym |
 | **Plan / currency / market** | Basic · AED · United Arab Emirates |
-| **Loaded** | 50 products · 31 collections · restyled theme (unpublished) |
+| **Loaded** | 50 products · 31 collections · custom-built storefront UI (unpublished) |
 | **Waiting to import** | 238 more products in `data/remaining-catalogue.csv` |
 
 > This is a sandbox. Nothing here touches the live lxpforged.com store. Product copy has been
@@ -16,7 +16,7 @@ rehearse product operations — adding products one at a time and in bulk — wi
 
 ## Two things to do
 
-**1. Publish the theme.** The light, Concept-style look is built but sitting as an unpublished theme:
+**1. Publish the theme.** The storefront UI is hand-built to match lxpforged.com and sits as an unpublished theme:
 
 > Online Store → Themes → **“LXP Forged — Practice”** → Preview, then **Publish**
 
@@ -53,7 +53,8 @@ Categories: Exhaust, Aerodynamic, Wheels, Suspension, Engine, Collectibles, plus
 | `data/catalogue-full.json` | All 288 products as structured JSON (titles, tags, variants, image URLs). |
 | `docs/TAXONOMY.md` | The tag scheme and tag→collection map. **Read before adding products.** |
 | `docs/PRACTICE-GUIDE.md` | Five drills: one-by-one, bulk edit, CSV import, collections, inventory. |
-| `docs/THEME.md` | How the look was rebuilt, what's still manual. |
+| `docs/THEME.md` | How the UI was built, the token table, what's still manual. |
+| `theme/` | Source of the custom storefront UI — stylesheet, six Liquid sections, homepage template. |
 
 ## Known gaps
 

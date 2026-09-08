@@ -1,0 +1,89 @@
+{{ 'lxp-base.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign s = section.settings
+  assign fit_class = ''
+  assign panel_class = ''
+  if s.image_fit == 'contain'
+    assign fit_class = 'is-contain'
+    assign panel_class = ' lxp-media--panel'
+  endif
+  assign ratio_class = ''
+  if s.ratio == '4x3'
+    assign ratio_class = ' lxp-media--4x3'
+  elsif s.ratio == 'wide'
+    assign ratio_class = ' lxp-media--wide'
+  endif
+-%}
+<section class="lxp lxp-section">
+  <div class="lxp-container">
+    {%- if s.heading != blank or s.link_label != blank -%}
+      <div class="lxp-head">
+        <div>
+          {%- if s.eyebrow != blank -%}<p class="lxp-eyebrow">{{ s.eyebrow }}</p>{%- endif -%}
+          {%- if s.heading != blank -%}<h2 class="lxp-h3" style="margin-top:.4rem">{{ s.heading }}</h2>{%- endif -%}
+        </div>
+        {%- if s.link_label != blank -%}<a class="lxp-link" href="{{ s.link_url | default: '/collections' }}">{{ s.link_label }}</a>{%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if s.collections != blank -%}
+      <div class="lxp-grid" data-cols="{{ s.columns }}" data-mobile="{{ s.mobile_columns }}">
+        {%- for c in s.collections -%}
+          {%- liquid
+            assign label = c.title
+            if s.strip_prefix
+              assign label = label | split: ' - ' | last
+            endif
+            assign img = c.image
+            unless img
+              assign img = c.products.first.featured_image
+            endunless
+          -%}
+          <a class="lxp-tile" href="{{ c.url }}">
+            <div class="lxp-media{{ ratio_class }}{{ panel_class }}">
+              {%- if img -%}
+                {{ img | image_url: width: 1200 | image_tag: loading: 'lazy', class: fit_class,
+                   widths: '300,450,600,900,1200', sizes: '(max-width:989px) 45vw, 24vw', alt: label }}
+              {%- endif -%}
+            </div>
+            <p class="lxp-tile__label">{{ label }}</p>
+            {%- if s.show_count -%}<span class="lxp-tile__count">{{ c.products_count }} products</span>{%- endif -%}
+          </a>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <p class="lxp-empty">Pick collections for this section in the theme editor.</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "LXP collections",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Shop by marque" },
+    { "type": "text", "id": "link_label", "label": "Link label" },
+    { "type": "url", "id": "link_url", "label": "Link URL" },
+    { "type": "collection_list", "id": "collections", "label": "Collections", "limit": 12 },
+    { "type": "select", "id": "image_fit", "label": "Image fit",
+      "options": [
+        { "value": "cover", "label": "Fill (photography)" },
+        { "value": "contain", "label": "Fit on panel (cut-outs)" }
+      ], "default": "cover" },
+    { "type": "select", "id": "ratio", "label": "Image ratio",
+      "options": [
+        { "value": "square", "label": "Square" },
+        { "value": "4x3", "label": "4:3" },
+        { "value": "wide", "label": "Wide" }
+      ], "default": "square" },
+    { "type": "range", "id": "columns", "label": "Columns", "min": 2, "max": 5, "step": 1, "default": 4 },
+    { "type": "select", "id": "mobile_columns", "label": "Mobile columns",
+      "options": [{ "value": "1", "label": "1" }, { "value": "2", "label": "2" }], "default": "2" },
+    { "type": "checkbox", "id": "strip_prefix", "label": "Trim Category / Car / Brand prefix from labels", "default": true },
+    { "type": "checkbox", "id": "show_count", "label": "Show product count", "default": false }
+  ],
+  "presets": [{ "name": "LXP collections" }]
+}
+{% endschema %}
