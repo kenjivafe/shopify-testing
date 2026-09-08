@@ -8,7 +8,7 @@ rehearse product operations — adding products one at a time and in bulk — wi
 | **Practice store** | `07jxvv-ym.myshopify.com` |
 | **Admin** | https://admin.shopify.com/store/07jxvv-ym |
 | **Plan / currency / market** | Basic · AED · United Arab Emirates |
-| **Loaded** | 50 products · 31 collections · custom-built storefront UI (unpublished) |
+| **Loaded** | 50 products · 31 collections · custom storefront UI (live) |
 | **Waiting to import** | 238 more products in `data/remaining-catalogue.csv` |
 
 > This is a sandbox. Nothing here touches the live lxpforged.com store. Product copy has been
@@ -16,12 +16,12 @@ rehearse product operations — adding products one at a time and in bulk — wi
 
 ## Two things to do
 
-**1. Publish the theme.** The storefront UI is hand-built to match lxpforged.com and sits as an unpublished theme:
+**1. Publish the menu theme.** You already published *LXP Forged — Practice*, so the homepage UI is
+live. The custom header and mega menu landed in a duplicate afterwards:
 
-> Online Store → Themes → **“LXP Forged — Practice”** → Preview, then **Publish**
+> Online Store → Themes → **“LXP Forged — Practice (menu)”** → Preview, then **Publish**
 
-Publishing is a manual step by design (see [`docs/THEME.md`](docs/THEME.md)). The live theme stays
-stock Horizon until you click it, and publishing the untouched `Horizon` theme rolls it back.
+It's the live theme plus the custom header. Publishing the previous theme rolls the header back.
 
 **2. Import the rest of the catalogue.**
 
@@ -54,7 +54,7 @@ Categories: Exhaust, Aerodynamic, Wheels, Suspension, Engine, Collectibles, plus
 | `docs/TAXONOMY.md` | The tag scheme and tag→collection map. **Read before adding products.** |
 | `docs/PRACTICE-GUIDE.md` | Five drills: one-by-one, bulk edit, CSV import, collections, inventory. |
 | `docs/THEME.md` | How the UI was built, the token table, what's still manual. |
-| `theme/` | Source of the custom storefront UI — stylesheet, six Liquid sections, homepage template. |
+| `theme/` | Source of the custom storefront UI — stylesheet, seven Liquid sections, header group, homepage template. |
 
 ## Known gaps
 

@@ -2,11 +2,11 @@
 
 The reference site runs **Concept** (Shopify theme store ID 2412), a paid theme that can't be
 installed here. Rather than bend a free theme's settings into an approximation, the storefront UI is
-**hand-written**: a own design-system stylesheet plus six custom Liquid sections, so the markup and
+**hand-written**: our own design-system stylesheet plus seven custom Liquid sections, so the markup and
 CSS are ours rather than Horizon's.
 
-Horizon is still the installed theme — it supplies the header, footer, cart drawer, search and the
-product/collection templates. The homepage is entirely custom.
+Horizon is still the installed theme — it supplies the footer, cart drawer, search and the
+product/collection templates. The homepage **and the header/menu** are entirely custom.
 
 ## Design tokens
 
@@ -41,6 +41,8 @@ Concept's fluid type ramps (`clamp()` on a 0.25rem `--sp-*` scale) are mirrored 
 | `sections/lxp-products.liquid` | Product card grid — contained product shot, vendor, title, price, sale badge |
 | `sections/lxp-split.liquid` | Image + text, image left or right, optional dark ground |
 | `sections/lxp-statement.liquid` | Centred statement block |
+| `sections/lxp-header.liquid` | Sticky header, hover mega menu, mobile drawer |
+| `sections/header-group.json` | Wires the announcement bar + `lxp-header` into the header group |
 | `templates/index.json` | Homepage, built only from the above |
 
 Every section carries a `{% schema %}` with presets, so they're editable in the theme editor and can
@@ -67,11 +69,52 @@ be reused on any other template.
 Collection tiles trim the `Category - ` / `Car - ` / `Brand - ` prefix for display, so the grid reads
 "Exhaust" while the collection keeps its full name.
 
-## Navigation
+## Navigation and the menu
 
 Rebuilt to match the reference site exactly: **Shop · Brands · Installation · About · Contact**.
-Shop and Brands are dropdowns; Installation, About and Contact are real pages (Installation and
-About were created, Contact already existed).
+Installation, About and Contact are real pages (Installation and About were created; Contact
+already existed).
+
+### How the reference menu works
+
+From lxpforged's markup, each dropdown is:
+
+```html
+<details is="details-mega" trigger="hover" level="top">
+  <summary data-link="/collections/brand-novitec" aria-haspopup="true">SHOP</summary>
+  <div class="mega-menu">
+    <ul class="mega-menu__list page-width--full">
+      <li class="mega-menu__item aspect-square"><span class="media-card">…</span></li>
+      …
+```
+
+So: **hover-triggered**, a **full-bleed panel** dropping below the header, containing a row of
+**square image cards** — one per child link — lazily filled through Shopify's Section Rendering API.
+The header itself is `header--left-center`: icons left, logo centred, sticky always.
+
+### What `lxp-header.liquid` does
+
+Same behaviour, written from scratch as a `<lxp-header>` custom element:
+
+| Reference behaviour | Ours |
+|---|---|
+| Hover opens the panel | `pointerenter` with a 70 ms open / 140 ms close delay, so a diagonal mouse path doesn't flicker |
+| One panel at a time | Opening one closes the others |
+| Full-width drop panel | `position: absolute; left/right: 0` on a `position: static` nav item |
+| Square image cards | Card per child link, image pulled from the linked collection (falls back to its first product's image, then to a text-only tile) |
+| Staggered reveal | Per-child `transition-delay` on opacity/translate |
+| Sticky header | `is-stuck` class past 8 px of scroll, adding a hairline and soft shadow |
+| Mobile drawer | Left slide-in with sliding sub-views, back button, scrim, `Escape` to close, body scroll locked |
+
+Beyond the reference, it is keyboard-operable: `focusin` opens, `focusout` closes, `Escape` closes
+everything, and `aria-expanded` / `aria-haspopup` track state. `prefers-reduced-motion` collapses
+the transitions.
+
+Child labels get the `Category - ` / `Car - ` / `Brand - ` prefix trimmed, so the panel reads
+"Exhaust" while the collection keeps its full name.
+
+The menu is driven entirely by **Navigation → Main menu** — add or reorder links there and both the
+mega panel and the mobile drawer follow, no theme edit needed.
 
 ## Images
 
@@ -99,14 +142,23 @@ worth knowing about:
    `image_fit` setting and the grey panel treatment.
 3. The original "installation" image was the LXP wordmark, not a workshop photo.
 
+The menu was driven the same way — Playwright hovered *Shop*, asserted the panel opened, hovered
+*Brands* and asserted the first closed, pressed `Escape` and asserted both closed, scrolled and
+asserted `is-stuck`, then opened the mobile drawer and stepped into a sub-view. All passed.
+`docs/menu-mega.png` and `docs/menu-drawer.png` are those renders. It also caught that the mega
+cards were letterboxing photography (`object-fit: contain`), and that image-less links rendered as
+blank tiles.
+
 ## The theme is NOT live yet
 
 It's an **unpublished** theme, **“LXP Forged — Practice”**. Publishing is blocked for the API
 integration used here, so the last step is manual:
 
-> **Online Store → Themes → “LXP Forged — Practice” → Preview, then Publish**
+> **Online Store → Themes → “LXP Forged — Practice (menu)” → Preview, then Publish**
 
-The live theme stays stock Horizon until you click it; republishing `Horizon` rolls everything back.
+You published “LXP Forged — Practice”, which made it live and blocked further API writes to it — so
+the menu work went into a duplicate, **“LXP Forged — Practice (menu)”**. It contains everything the
+live theme has plus the custom header. Publishing the previous theme rolls the header back.
 
 ### Why the first pass was dark
 
