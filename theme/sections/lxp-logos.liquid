@@ -1,0 +1,102 @@
+{{ 'lxp-base.css' | asset_url | stylesheet_tag }}
+{%- assign s = section.settings -%}
+<section class="lxp lxp-section lxp-section--tight">
+  <div class="lxp-container">
+    {%- if s.heading != blank or s.link_label != blank -%}
+      <div class="lxp-head">
+        <div>
+          {%- if s.eyebrow != blank -%}<p class="lxp-eyebrow">{{ s.eyebrow }}</p>{%- endif -%}
+          {%- if s.heading != blank -%}<h2 class="lxp-h3" style="margin-top:.4rem">{{ s.heading }}</h2>{%- endif -%}
+        </div>
+        {%- if s.link_label != blank -%}<a class="lxp-link" href="{{ s.link_url | default: '/collections' }}">{{ s.link_label }}</a>{%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <ul class="lxp-logos" role="list" style="--cols: {{ s.columns }};">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign b = block.settings
+          assign label = b.label
+          if label == blank and b.collection != blank
+            assign label = b.collection.title | split: ' - ' | last
+          endif
+          assign url = b.link
+          if url == blank and b.collection != blank
+            assign url = b.collection.url
+          endif
+        -%}
+        <li class="lxp-logos__item" {{ block.shopify_attributes }}>
+          {%- if url != blank -%}<a class="lxp-logos__tile" href="{{ url }}">{%- else -%}<div class="lxp-logos__tile is-static">{%- endif -%}
+            <span class="lxp-logos__mark">
+              {%- if b.image != blank -%}
+                {{ b.image | image_url: width: 600 | image_tag: loading: 'lazy',
+                   widths: '200,300,450,600', sizes: '(max-width:989px) 40vw, 18vw', alt: label }}
+              {%- else -%}
+                <span class="lxp-logos__wordmark">{{ label }}</span>
+              {%- endif -%}
+            </span>
+            {%- if s.show_labels and s.show_count and b.collection != blank -%}
+              <span class="lxp-logos__label">{{ b.collection.products_count }} product{% unless b.collection.products_count == 1 %}s{% endunless %}</span>
+            {%- endif -%}
+          {%- if url != blank -%}</a>{%- else -%}</div>{%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+
+{% stylesheet %}
+  .lxp-logos { display: grid; grid-template-columns: repeat(var(--cols, 6), 1fr); gap: .5rem;
+    margin: 0; padding: 0; list-style: none; }
+  @media (max-width: 1279px) { .lxp-logos { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 749px) { .lxp-logos { grid-template-columns: repeat(2, 1fr); } }
+
+  .lxp-logos__item { display: flex; }
+  .lxp-logos__tile { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .85rem;
+    padding: 1.75rem 1rem; text-decoration: none; color: inherit;
+    border-radius: var(--lxp-radius-card); box-shadow: inset 0 0 0 1px var(--lxp-border-light);
+    background: var(--lxp-bg); transition: background .25s ease, box-shadow .25s ease; }
+  a.lxp-logos__tile:hover { background: #fafafa; box-shadow: inset 0 0 0 1px var(--lxp-border); }
+  .lxp-logos__tile.is-static { cursor: default; }
+
+  /* min-height:0 stops a tall logo from stretching the flex item past `height` */
+  .lxp-logos__mark { display: grid; place-items: center; width: 100%; height: 64px; min-height: 0; }
+  .lxp-logos__mark img { max-width: 100%; max-height: 64px; width: auto; height: auto;
+    object-fit: contain; opacity: .85; transition: opacity .3s ease, transform .3s ease; }
+  a.lxp-logos__tile:hover .lxp-logos__mark img { opacity: 1; transform: scale(1.04); }
+  .lxp-logos__wordmark { font-size: clamp(1rem, 1.6vw, 1.4rem); font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase; text-align: center; line-height: 1.1; }
+
+  .lxp-logos__label { font-size: .6875rem; font-weight: 500; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--lxp-muted); text-align: center; }
+  .lxp-logos__label em { font-style: normal; opacity: .65; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "LXP logos",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Shop by brand" },
+    { "type": "text", "id": "link_label", "label": "Link label" },
+    { "type": "url", "id": "link_url", "label": "Link URL" },
+    { "type": "range", "id": "columns", "label": "Columns", "min": 2, "max": 8, "step": 1, "default": 6 },
+    { "type": "checkbox", "id": "show_labels", "label": "Show labels", "default": true },
+    { "type": "checkbox", "id": "show_count", "label": "Show product count", "default": false }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Brand",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Logo" },
+        { "type": "text", "id": "label", "label": "Name" },
+        { "type": "collection", "id": "collection", "label": "Collection" },
+        { "type": "url", "id": "link", "label": "Link (overrides collection)" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "LXP logos", "blocks": [{ "type": "logo" }, { "type": "logo" }, { "type": "logo" }] }]
+}
+{% endschema %}

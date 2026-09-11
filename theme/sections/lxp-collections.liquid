@@ -47,7 +47,7 @@
               {%- endif -%}
             </div>
             <p class="lxp-tile__label">{{ label }}</p>
-            {%- if s.show_count -%}<span class="lxp-tile__count">{{ c.products_count }} products</span>{%- endif -%}
+            {%- if s.show_count -%}<span class="lxp-tile__count">{{ c.products_count }} product{% unless c.products_count == 1 %}s{% endunless %}</span>{%- endif -%}
           </a>
         {%- endfor -%}
       </div>
